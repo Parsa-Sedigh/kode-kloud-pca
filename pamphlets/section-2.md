@@ -9,7 +9,7 @@ span and ... .
 
 Prometheus only handles metrics. It does nothing with logs and traces.
 
-## 3-2 - SLOSLASLI 0334
+## 3-2 - SLO-SLA-SLI 0334
 
 Download the course resources from the link below
 
