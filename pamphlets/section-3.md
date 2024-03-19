@@ -56,3 +56,115 @@ Prometheus is pull based system. In push based system the server has no idea abo
 Prometheus is not meant for collecting events, it's used exclusively for collecting numeric metrics. So it's pull based.
 
 ## 7-4 - Prometheus Installation 0529
+Promtool: help verify if config is acceptable and everything is gonna work once you start Prometheus.
+
+When you install Prometheus and run `up` query, you see one target in up state. That's because even though we didn't configure any target yet,
+Prometheus by default is configured to scrape itself. So it's going to monitor it's own metrics as well.
+
+```shell
+brew services start prometheus
+```
+Now visit localhost:9090
+
+## 8-5 - Prometheus Installation systemd 0550
+When we start Prometheus server, it creates some issues:
+- it starts the Prometheus process in foreground. So if we close the terminal, we lose the process, Prometheus goes down.
+- it doesn't automatically start up on boot. So if we reboot the server, we're gonna have to open a terminal and start Prometheus again
+
+Instead, we want to create a systemd unit for Prometheus, so it automatically starts it on boot and runs it in background.
+
+For this:
+1. create a user called prometheus. This user is responsible for running the Prometheus process
+With --no-create-home option of useradd command, we make sure the user can't log in and that's because this user is exclusively for
+starting the prometheus process. So it's not a normal user that we would use to log in as
+
+In linux, /etc folder is usually for configuration.
+
+In linux, we move the executables to /usr/local/bin .
+
+The actual command to start prometheus after copying files to the mentioned
+destination in slides(in order to start prometheus with systemd) is:
+```shell
+# With -u flag, we change the user that's running the command
+sudo -u prometheus /usr/local/bin/prometheus \ ... # (look at the slide for the rest)
+```
+
+Then create a systemd unit service file for prometheus service:
+```shell
+sudo vi /etc/systemd/system/prometheus.service
+```
+Look at the slide ... .
+
+Since we changed the unit file, we have to do this:
+```shell
+sudo systemctl daemon-reload
+```
+
+To make prometheus start automatically on boot, we also have to run this:
+```shell
+sudo systemctl enable prometheus
+```
+
+## 9-6 - Prometheus Installation Demo 0647
+Setting up a unit in systemd to run Prometheus.
+
+```shell
+sudo useradd --no-create-home --shell /bin/false prometheus
+
+sudo mkdir /etc/prometheus # to store the configuration file
+sudo mkdir /var/lib/prometheus # to store the data
+
+sudo chown prometheus:prometheus /etc/prometheus
+sudo chown prometheus:prometheus /var/lib/prometheus
+
+sudo cp prometheus /usr/local/bin/ # copy the executable
+sudo cp promtool /usr/local/bin/
+
+sudo chown prometheus:prometheus /usr/local/bin/prometheus
+sudo chown prometheus:prometheus /usr/local/bin/promtool
+
+sudo cp -r consoles/ etc/prometheus
+sudo cp -r console_libraries/ etc/prometheus/
+
+sudo chown -R prometheus:prometheus /etc/prometheus/consoles 
+sudo chown -R prometheus:prometheus /etc/prometheus/console_libraries
+
+sudo cp prometheus.yml /etc/prometheus
+sudo chown prometheus:prometheus /etc/prmetheus/prometheus.yml
+
+# create the service file
+sudo vi /etc/systemd/system/prometheus.service
+```
+
+prometheus.service:
+`
+[Unit]
+Description=Prometheus
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=prometheus
+Group=prometheus
+Type=simple
+ExecStart=/usr/local/bin/prometheus \
+    --config.file /etc/prometheus/prometheus.yml \
+    --storage.tsdb.path /etc/prometheus/ \
+    --web.console.templates=/etc/prometheus/consoles \
+    --web.console.libraries=/etc/prometheus/console_libraries \
+
+[Install]
+WantedBy=multi-user.target
+`
+
+```shell
+sydo systemctl daemon-reload
+
+sudo systemctl start prometheus
+systemctl status prometheus
+
+# enable it on startup
+sudo systemctl enable prometheus
+```
+
+## 10-7 - Node Exporter
