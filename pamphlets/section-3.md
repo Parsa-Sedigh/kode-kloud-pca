@@ -158,7 +158,7 @@ WantedBy=multi-user.target
 `
 
 ```shell
-sydo systemctl daemon-reload
+sudo systemctl daemon-reload
 
 sudo systemctl start prometheus
 systemctl status prometheus
@@ -168,3 +168,36 @@ sudo systemctl enable prometheus
 ```
 
 ## 10-7 - Node Exporter
+Install exporter on one of the targets that we wanna collect metrics on.
+
+This exporter is responsible for collecting metrics on a linux host and presenting it so that prometheus can then scrape it.
+
+To verify it works after running node exporter:
+```shell
+curl localhost:9100/metrics
+```
+
+## 11-8 - Node Exporter systemd
+TODO
+
+## 12-9 - Prometheus Configuration
+Now that we have exporters like node exporters exposing the metrics, we need to configure Prometheus to be aware of those nodes to scrape
+them, remember we follow a pull-based model. We configure it in prometheus.yml .
+
+In prometheus.yml, all config sections gonna inherit the `global` section and in those config sections you can override the global configs.
+
+Job: a collection of instances that need to be scraped.
+
+**When installed with brew, the prometheus.yml is in `opt/homebrew/etc/`.**
+
+```shell
+sudo systemctl restart prometheus
+```
+
+Prometheus web ui -> status -> targets
+
+So we added a new target for prometheus to scrape which in this case is a linux machine running node_exporter.
+
+## 13-10-Lab – Prometheus Installation
+
+## 14-11 - Authentication-Encryption
