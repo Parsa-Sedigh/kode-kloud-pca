@@ -253,14 +253,51 @@ Or you can use a programming lang.
 TODO
 
 ## 16-13 - Metrics
+Timeseries: Stream of timestamped values sharing the same metric and set of labels.
 
+In histogram, the bigger buckets gonna include the values that fell into smaller buckets(it's accumulated).
+
+Summary is gonna give us percentages. For example in response time metric, histogram is gonna calculate how many response times
+were under .2s, how many under .5s(which also include under .2s) and how many under 1s?
+
+But summary is gonna give us that 20% of total reqs were finished less than .2s, 50% were under .8s and 80% of all reqs finished less than
+1s.
+
+Do not use colons in metric names, they are for recording rules.
+
+Every metric is automatically assigned 2 labels by default which are `instance` and `job`.
 
 ## 17-14 - Metrics Quiz
-## 15 - Exploring Expression Browser
-16 - Prometheus in Docker Container
-17 - Intro to PromTools
-18 - Monitoring Containers
 
-19 - Lab – Monitoring Containers
+## 15 - Exploring Expression Browser
+Expression Browser: is a web UI for prometheus server to query the server. localhost:9090
+
+`up`: This query returns a metric called up which is gonna tell us which targets are in up state and which are down(which ones can be reached
+and which ones can't). 1 is up, 0 is down.
+
+Once you have a grafana instance installed, then you can build out dashboards using a separate tool so that you don't have to
+interact with the expression browser and you can create more customized dashboards.
+
+## 16 - Prometheus in Docker Container
+We saw how to install Prometheus on a VM or bare-metal server.
+
+Use bind mounts on docker image so that you can sync prometheus.yml from the host machine to the container.
+
+## 17 - Intro to PromTools
+
+## 18 - Monitoring Containers
+We can collect:
+- docker engine metrics
+- container metrics using cadvisor
+
+### docker engine metrics
+To enable docker engine metrics, go to host machine and create daemon.json in /etc/docker and put the content in the slid
+
+If you want info/metrics about **a container**, use cadvisor.
+
+To enable cadvisor, we're gonna use a container to run the cAdvisor process and it's gonna responsible for getting the container's
+info
+
+## 19 - Lab – Monitoring Containers
 
 Feedback – Prometheus Certified Associate
