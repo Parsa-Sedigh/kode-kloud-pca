@@ -201,3 +201,66 @@ So we added a new target for prometheus to scrape which in this case is a linux 
 ## 13-10-Lab – Prometheus Installation
 
 ## 14-11 - Authentication-Encryption
+### First issue
+Without requiring authentication, anybody that has access to the target, can also scrape the metrics exposed by
+the exporter of that target. We don't want the metrics to be exposed out in the open like anybdoy can access it.
+This is sth authentication solves
+
+### Second issue
+When prometheus sends data to and from your target, if somebody is able to capture the packets with a sniffer as it traverses the
+network with, they'll be able to read all that data in plain text. So even if we set up auth, if anybody captures the packets, then
+they can see all the data. This is solved by encryption. Now if they sniff it, they can't find out what the data is.
+
+### Setting up encryption with TLS
+First create certificates. There are a couple of ways of doing this. We can use `openssl` to generate self-signed certs. There is also
+lets encrypt and ... .
+
+We're gonna get 2 files: node_export.cert and node_export.key .
+
+Then create config.yml for the node exporter:
+```yaml
+tls_server_config:
+  cert_file: node_export.cert
+  key_file: node_export.key
+```
+
+Update node exporter process to make the use of the new config.yml file:
+```shell
+./node_exporter --web.config=config.yml
+```
+
+Now when we send req to /metrics of the node, we get tls error. Since we used self-signed certs, if we used certs from lets encrypt,
+we wouldn't get this issue. So only because we used self-signed certs, when we send curl, we have to pass `-k` flag to allow an
+insecure connection.
+
+### Prometheus TLS Config
+We have setup the config on the node exporter to use TLS, we now have to do the same thing on Prometheus, because Prometheus right now is
+still gonna send a req not using TLS but still using http, so there's gonna be a mismatch in config.
+
+So copy the generated .cert file of node_exporter to Prometheus server. We can use scp to copy that file over.
+
+Since we're using self-signed certs, we wanna set `insecure_skip_verify: true`. If you got the certs from somewhere else then you wouldn't
+have to do this. This setting is equivalent of that -k flag we used on curl.
+
+### Prometheus authentication
+When setting up authentication with Prometheus, first create a hash of the password.
+
+To do this, you can use apache2-utils or httpd-tools.
+
+Or you can use a programming lang.
+
+## 15-12-Lab – Authentication-Encryption
+TODO
+
+## 16-13 - Metrics
+
+
+## 17-14 - Metrics Quiz
+## 15 - Exploring Expression Browser
+16 - Prometheus in Docker Container
+17 - Intro to PromTools
+18 - Monitoring Containers
+
+19 - Lab – Monitoring Containers
+
+Feedback – Prometheus Certified Associate
