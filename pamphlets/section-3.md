@@ -249,7 +249,7 @@ To do this, you can use apache2-utils or httpd-tools.
 
 Or you can use a programming lang.
 
-## 15-12-Lab – Authentication-Encryption
+## 15-12-Lab – Authentication & Encryption
 TODO
 
 ## 16-13 - Metrics
