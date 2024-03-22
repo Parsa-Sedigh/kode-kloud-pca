@@ -57,11 +57,27 @@ Exactly match example: `node_filesystem_avail_bytes / node_filesystem_size_bytes
 ex: `http_errors_total / ignoring(error) group_left http_requests_total`. http_errors_total is the `many` side.
 
 ## 27-8 - Aggregation
+Another form of operators like aggregation operators.
+
+When we do an aggregation op, it's gonna perform it on every single entry in the instant vector.
+
+`by` clause: groups entries based on the provided label. Ex: `sum by(path) (http_requests)`: sum the entries that have the same `path` label.
+
+### aggregation operator
+`without` is the opposite of `by`.
+
+`sum without(path) (http_requests)`: aggregate based off all labels except `path` and sum them.
+
+`sum by (mode) (node_cpu_seconds_total)`
+
 ## 28-Lab – Operators, Vector Matching, Aggregators
+
 ## 29-9 - Functions
+
 ## 30-10 - Subquery
 ## 31-11 - Histogram & Summary
 Lab – Functions, subqueries, Histogram, Summary
+
 ## 32-12 - Recording Rules
 Lab – Recording Rules
 ## 33-14 - HTTP API
