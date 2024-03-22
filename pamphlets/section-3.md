@@ -284,6 +284,7 @@ We saw how to install Prometheus on a VM or bare-metal server.
 Use bind mounts on docker image so that you can sync prometheus.yml from the host machine to the container.
 
 ## 17 - Intro to PromTools
+Instant vector gives us the most recent value and a range vector gives values for the past x minutes or x days or ... .
 
 ## 18 - Monitoring Containers
 We can collect:
