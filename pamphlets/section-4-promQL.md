@@ -123,10 +123,25 @@ A: This won't work: `max_over_time(rate(node_network_transmit_bytes_total[1m]))`
 We need subquery => `max_over_time(rate(node_network_transmit_bytes_total[1m]) [5h:30s])`
 
 ## 31-11 - Histogram & Summary
+There are 3 sub metrics within a histogram metric:
+- _bucket: number of observations that fell into this bucket
+- _count: total num of observations
+- _sum
 
+### Quantiles
+Histogram metrics allow us to easily calculate a quantile.
+
+Looking at the definition of quantile, didn't we already cover that with histograms having `le` label which tell us how many
+values were below that bucket(the value of le label)? That is true, however quantiles work specifically with percentages.
+
+histogram_quantile() returns an estimate, it doesn't return an exact number.
+
+### Summary
+It's like running the `histogram_quantile()` func by default but they operate as buckets for us in this case.
 
 ## 32-12-Lab – Functions, subqueries, Histogram, Summary
 
 ## 33-13 - Recording Rules
-Lab – Recording Rules
-## 34-14 - HTTP API
+
+## 34-14-Lab – Recording Rules
+## 35-15 - HTTP API
