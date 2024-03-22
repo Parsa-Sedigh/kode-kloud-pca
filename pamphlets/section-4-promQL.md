@@ -100,7 +100,31 @@ When using rate() in prometheus ui, use the graph tab instead of table to see th
 the rate has increases and also decreases, so it's more valuable info than a plain counter metric.
 
 ## 30-10 - Subquery
+This won't work: `max_over_time(rate(http_requests_total[10m]))`
+
+There are a couple of issues:
+- max_over_time() expects a range vector but rate() returns an instant vector. In a range vector, you have multiple values and the
+max_over_time() is gonna return the largest value.
+- we know when we have rate(), the [10m] represents we're gonna group the data in 10m groups, not that it's gonna get the data for 
+past 10m
+
+To address this specific use case, we use subqueries.
+
+Note: `node_network_transmit_bytes_total` metric returns total transmitted bytes on network interfaces of the targets.
+
+Q: Give me the transmitted bytes in past 1hr in 30s query interval.
+
+A: `rate(node_network_transmit_bytes_total[1m]) [1h:30s]` gives the data points for the past 1hr and each sample is gathered in
+30s interval.
+
+Q: What was the highest rate of transmitted bytes on network interfaces over the past 5 hours?
+
+A: This won't work: `max_over_time(rate(node_network_transmit_bytes_total[1m]))`. Because of the two reasons we mentioned.
+We need subquery => `max_over_time(rate(node_network_transmit_bytes_total[1m]) [5h:30s])`
+
 ## 31-11 - Histogram & Summary
+
+
 ## 32-12-Lab – Functions, subqueries, Histogram, Summary
 
 ## 33-13 - Recording Rules
