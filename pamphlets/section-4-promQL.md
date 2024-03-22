@@ -73,11 +73,36 @@ When we do an aggregation op, it's gonna perform it on every single entry in the
 ## 28-Lab – Operators, Vector Matching, Aggregators
 
 ## 29-9 - Functions
+### Changing type
+If the instant vector doesn't have exactly one element and we call scalar(<metric name>), it returns Nan. Like the `node_cpu_seconds_total` example.
+
+### rate
+We know a counter always go up, we expect it to always go up, so plotting it doesn't give us useful info. Instead, we'd like to get the
+rage of the increase.
+
+Q: We wanna know what is the rate in which the errors are increasing.
+
+### rate()
+A: `rate(http_errors[1m])`. [1m] normally means we wanna get the timeseries in the last 1 minute, but when used inside rate(), it's different.
+Each yellow circle shows at that point in time(horizontal axios), there was x errors(vertical axis). The values are not correct since
+number of errors in decimal is impossible!
+
+Here, 1m means how we're gonna group data together. So we group together all the scraped values over 1m window.
+
+Then in each group, we subtract the last data point from the first one and then we divide the result by 60s. 
+
+We're plotting the increase rate!
+
+### irate()
+Instead of taking the first and last data point of each group to calculate the rate, we use the last two data points of each group.
+
+When using rate() in prometheus ui, use the graph tab instead of table to see the changes of the increase rate. With rate(), we can see
+the rate has increases and also decreases, so it's more valuable info than a plain counter metric.
 
 ## 30-10 - Subquery
 ## 31-11 - Histogram & Summary
-Lab – Functions, subqueries, Histogram, Summary
+## 32-12-Lab – Functions, subqueries, Histogram, Summary
 
-## 32-12 - Recording Rules
+## 33-13 - Recording Rules
 Lab – Recording Rules
-## 33-14 - HTTP API
+## 34-14 - HTTP API
