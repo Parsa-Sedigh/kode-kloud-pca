@@ -132,7 +132,7 @@ There are 3 sub metrics within a histogram metric:
 Histogram metrics allow us to easily calculate a quantile.
 
 Looking at the definition of quantile, didn't we already cover that with histograms having `le` label which tell us how many
-values were below that bucket(the value of le label)? That is true, however quantiles work specifically with percentages.
+values were below that bucket(the value of `le` label)? That is true, however quantiles work specifically with percentages.
 
 histogram_quantile() returns an estimate, it doesn't return an exact number.
 
@@ -142,6 +142,27 @@ It's like running the `histogram_quantile()` func by default but they operate as
 ## 32-12-Lab – Functions, subqueries, Histogram, Summary
 
 ## 33-13 - Recording Rules
+### Recording rules
+On the prometheus server, we can provide an expression that's gonna be used for as the recording rule and that expression is gonna run
+continuously, maybe every 30s, or 1m depending on what you configure.
+
+This will speed up the results shown in dashboards because it no longer has to evaluate the expression on the fly, it's already stored in the
+DB. So grafana(visualization tool) can send the req to prometheus and then prometheus can just get the result of the recoding rule directly from
+the DB and then return it to the visualization tool.
+
+If you have more than one file and you have to manually write it out in rule_files property, you can use globs. 
+
+### Rules
+Since rules in a group run sequentially, we can have a rule referencing previous rules.
+
+### Record rule naming
+For level name: We use all the label names that we actually use(not the ones that are omitted) in the expression
 
 ## 34-14-Lab – Recording Rules
 ## 35-15 - HTTP API
+Grafana uses the prometheus http api to send reqs.
+
+````shell
+curl localhost:9090/api/v1/query --data "query=node_memory_active_bytes{job='node'}[10m]" --data "time=<time stamp>" | jq
+````
+When we use [10m] with a time, it means get the timeseries of the last 5m in that specific timestamp.
