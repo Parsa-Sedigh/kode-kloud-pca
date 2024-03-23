@@ -16,3 +16,5 @@ pay some sort of penalty, but there could be variety of other penalties as well.
 Download the course resources from the link below
 
 [Prometheus\_Certified\_Associate.pdf](https://kodekloud.com/wp-content/uploads/2022/12/Prometheus_Certified_Associate.pdf)
+
+Course Resources
