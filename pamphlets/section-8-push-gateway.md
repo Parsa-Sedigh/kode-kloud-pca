@@ -10,9 +10,9 @@ push gateway server, which is not helpful because we want information of the ori
 allows the metrics to specify custom labels for the instance and job labels. So the job1 can push a metric to push gtw and
 set the instance='job1' and job='job1'.
 
-## 54-1-Installation
+## 54-2-Installation
 
-## 55-1-Pushing Metrics
+## 55-3-Pushing Metrics
 ### HTTP
 The <label>/<value> do two things:
 - will get added to the metrics like what we had before
@@ -34,6 +34,6 @@ We have 2 groups(because groups are created based on job label and other labels(
 - group with db="mysql"
 - group with app="web"
 
-## 56-1-Client Library
-## 57-1-Lab – Push Gateway
+## 56-4-Client Library
+## 57-5-Lab – Push Gateway
 Feedback – Prometheus Certified Associate
