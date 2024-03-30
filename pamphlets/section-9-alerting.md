@@ -56,9 +56,31 @@ sudo alertmanager --config.file=/etc/alertmanager/alertmanager.yml --storage.pat
 ## 63-6-Lab – Alertmanager Installation
 
 ## 64-7-Configuration
+A receiver is responsible for sending out the notif t oend user.
 
+### Route
+A route is gonna have a match statement and the way matchers work is you provide a bunch of labels that you look for in an **alert**.
+So if an alert has those labels in the match statement, then it's gonna route that alert to the provided receiver.
 
 ## 65-8-Receivers & Notifiers
+### global config
+If we have the same config across multiple receivers, we can put them in this section.
+
 ## 66-9-Alertmanager Demo
+Prometheus and alert manager don't have to run on the same server.
+
+Look at `my-alerts` group in rules.yml .
+
+In prometheus web ui, go to `Alerts` page.
+
+The default grouping is based on `alertname`. So we're gonna have a separate notification for each `alertname`.
+
+This:
+```yaml
+group_by: ['team', 'env']
+```
+Means all of the alerts that have the same team and env labels, are gonna be grouped into one notification. 
+
 ## 67-10-Silences
+
 ## 68-11-Lab – Alertmanager
