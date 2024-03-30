@@ -8,11 +8,56 @@ false positive. For this, we can use `for` clause. So for example if the expr ev
 This is good for things like high cpu metrics. We don't care about quick cpu spikes.
 
 ## 59-2-Labels & Annotations
+### Annotations
+You can't use annotations to set up rules on matching certain alerts to trigger notifications.
+
+Firing sample value: the value of that metric when the alert was triggered
+
 ## 60-3-Alertmanager Architecture
+When an alert arrives on alert manager, the dispatcher is gonna first receive it and then it's gonna forward it to inhibition node.
+Inhibition node does one thing specifically which is: it allows you to specify rules where you can suppress certain alerts if other alerts
+exist. So we can say: If alert x exists, we don't want to do anything with alert y, we want to supress alert y.
+
+Then in silencing node it allows you to mute alerts. For example if you're performing some maintenance on one of the servers,
+we know that we're gonna trigger some alerts and since it's expected, we can supress them as well, so we can set up a silence rule.
+
+Routing is responsible for figuring out what alert gets sent to who through what integration. For example if alert x occurs,
+who(which team) do we sent this to?
+
+Notification engine has all of those 3rd party integrations like email, pagerduty and chat and it's responsible for sending notifs out.
+
 ## 61-4-Alertmanager Installation
+After setting up alert manager, we have to set up prometheus to use that alert manager. So add alertmanagers property there according to the
+slide.
+
 ## 62-5-Alertmanager Installation Systemd
+Just like what we did with prometheus and node exporter, we wanna set up alert manager so it's managed by systemd.
+
+```shell
+# creating a group and then a user on mac
+# All daemon users are prefixed with an underscore, such as _www.
+sudo dscl . -create /Users/_alertmanager UniqueID 300
+sudo dscl . -create /Users/_alertmanager PrimaryGroupID 300
+sudo dscl . -create /Users/_alertmanager UserShell /usr/bin/false
+```
+
+Then when changing the ownership of folders, use create group and username which in this case was _alertmanager:
+```shell
+sudo chown -R _alertmanager:_alertmanager /etc/alertmanager/
+```
+
+Note: This is for enabling the service on reboot: `sudo systemctl enable alertmanager`.
+
+On my machine, to run alertmanager:
+```shell
+sudo alertmanager --config.file=/etc/alertmanager/alertmanager.yml --storage.path=/var/lib/alertmanager
+```
+
 ## 63-6-Lab – Alertmanager Installation
+
 ## 64-7-Configuration
+
+
 ## 65-8-Receivers & Notifiers
 ## 66-9-Alertmanager Demo
 ## 67-10-Silences
