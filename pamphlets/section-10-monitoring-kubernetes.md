@@ -42,14 +42,53 @@ a helm chart.
 
 With prometheus-operator, we get access to custom resources like Prometheus, Alertmanager and ... . 
 
-## 70-1-Installing Helm Chart
-## 70-1-Prometheus Chart Overview
-## 70-1-Connecting To Prometheus
-## 70-1-Prometheus Configuration
-## 70-1-Deploy Demo Application
-## 70-1-Additional Scrape Configs
-## 70-1-Service Monitors
-## 70-1-Adding Rules
-## 70-1-Alertmanager Rules
-## 70-1-Lab – Kubernetes & Prometheus
-## 70-1-Feedback – Prometheus Certified Associate
+## 70-2-Installing Helm Chart
+
+## 71-3-Prometheus Chart Overview
+```shell
+kubectl get all
+```
+The prometheus helm chart created 2 stateful sets. The `statefulset.apps/prometheus-prometheus-kube-prometheus-prometheus` is
+our prometheus server. We have another stateful set that's responsible for running
+alert manager `statefulset.apps/alertmanager-prometheus-kube-prometheus-alertmanager`.
+
+It created 3 deployments:
+- It creates the grafana deployment.
+- it creates `deplyment.apps/prometheus-kube-prometheus-operator`: This is the operator that's gonna manage the lifecycle of our
+prometheus instance.
+
+We get one daemon in the k8s cluster named `prometheus-prometheus-node-exporter`. This daemon set is responsible for deploying a
+node-exporter pod on every single node in the k8s cluster. A daemon set takes an img and it makes sure every node in the k8s cluster
+will have a pod running this img on it.
+
+All of the created services by the helm chart is gonna be ClusterIP, so nothing is exposed to outside of the cluster. To access
+the apps, we either have to set up an ingress or modify the services to be a load balancer or just setting up a proxy to play around.
+
+```shell
+kubectl describe statefulset prometheus-prometheus-kube-prometheus-prometheus > prometheus.yaml
+```
+
+Note: When it comes to modifying the rules.yml, prometheus operator gives us high level abstractions to manipulate the 
+rules file with them instead of manually update that file.
+
+## 72-4-Connecting To Prometheus
+There are a couple of ways to access to prometheus.
+
+The service created for prometheus server is a clusterIP, so we don't have access to it outside of cluster, only inside of cluster.
+We can update the config of that service to be load balancer or NodePort. Or setting up an ingress.
+
+We can do port forwarding for debugging as well:
+```shell
+kubectl port-forward <pod name> <port we wanna connect to>
+```
+In this case, we wanna connect to port 9090 because the ClusterIP service of prometheus is listening on that.
+
+## 73-5-Prometheus Configuration
+
+## 74-6-Deploy Demo Application
+## 75-7-Additional Scrape Configs
+## 76-8-Service Monitors
+## 77-9-Adding Rules
+## 78-10-Alertmanager Rules
+## 79-11-Lab – Kubernetes & Prometheus
+## 80-12-Feedback – Prometheus Certified Associate
