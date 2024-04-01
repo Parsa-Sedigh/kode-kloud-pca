@@ -82,13 +82,65 @@ We can do port forwarding for debugging as well:
 kubectl port-forward <pod name> <port we wanna connect to>
 ```
 In this case, we wanna connect to port 9090 because the ClusterIP service of prometheus is listening on that.
+To access prometheus server pod from outside of cluster:
+```shell
+kubectl port-forward pod/prometheus-prometheus-kube-prometheus-prometheus-0 9090
+```
 
 ## 73-5-Prometheus Configuration
+All of these configs are set up by helm chart, so we didn't have to manually define all the relabel configs for getting access
+to specific targets that we wanna scrape.
 
 ## 74-6-Deploy Demo Application
+
 ## 75-7-Additional Scrape Configs
+There are two ways of changing prometheus server config. First way is less ideal.
+1. values file which allows tweaking the config of the helm chart. Here, we update the `AdditionalScrapeConfig` property. 
+Like before, we provide a list of jobs and then run: 
+`helm upgrade <release name - here promehteus> <chart name here: prometheus-community...>` -f values.yaml 
+2. using service monitors to add new targets to prometheus
+
+We wanna use service monitor, so that we can be more declarative when applying new scrape configs.
+
+### First approach
+```shell
+# Then look for AdditionalScrapeConfigs
+helm show values prometheus-community/kube-prometheus-stack > values.yaml
+```
+
 ## 76-8-Service Monitors
+There are 2 CRDs that we care in this case:
+- promethium: prometheuses.monitoring.coreos.com , this is responsible for creating prometheus instance. releaseLabel is defined
+here. So the new service monitros that we create, should match the releaseLabel here so that they get automatically registered by prometheus,
+which makes it that the services that they point, get scraped by prometheus
+- service monitor: servicemonitors.monitoring.coreos.com , so that we can add more targets
+
+Service monitor is a custom resource.
+
+To scrape a target, we know we would have our app, a service and deployment. First we create a ServiceMonitor. A serviceMonitor is gonna
+reference a service that is in some place in our app. If we wanna create an app, we have to reference the service that we created for that app,
+in the ServiceMonitor.
+
+There are 3 important things in serviceMonitor definition to point it to the service of the app we wanna scrape:
+1. in selector.matchLabels we provide a label(key: value pair) of the label that we gave to the service(labels section of service)
+2. specify the port name in endpoints.port(the port of the app we wanna scrape)
+3. job label of the scrape we wanna be doing. By default the job label here would be the name of the k8s service of the app we wanna scrape.
+We can change the value fo this label using `spec.jobLabel`. The value of `spec.jobLabel` should match with a key in labels section of the service.
+In the slide, job is the value of jobLabel in ServiceMonitor and a key in labels section of the service.
+
+Notes:
+- The endpoint.interval is the interval of scrape.
+- endpoints.path by default is /metrics
+
+With this config, prometheus will know it should scrape the app that is behind the service definition.
+
+### Release label
+By default, prometheus doesn't know which service monitors to look for, but if you give the service monitor the release label
+that is specified in `serviceMonitorSelector`, prometheus will automatically add the service that that service monitor is pointing to,
+to the target list to scrape.
+
 ## 77-9-Adding Rules
+
 ## 78-10-Alertmanager Rules
 ## 79-11-Lab – Kubernetes & Prometheus
 ## 80-12-Feedback – Prometheus Certified Associate
