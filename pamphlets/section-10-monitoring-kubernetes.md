@@ -140,7 +140,46 @@ that is specified in `serviceMonitorSelector`, prometheus will automatically add
 to the target list to scrape.
 
 ## 77-9-Adding Rules
+We saw how to add new targets using service monitor. Now how to add rules?
 
 ## 78-10-Alertmanager Rules
+Adding rules to alert manager in k8s env. 
+
+### Config differences
+An alertmanager.yml config that isn't deployed on k8s is a bit different than alertmanager.yml for the custom resource that is 
+defined within k8s using the prometheus operator.
+
+`alertmanagerConfigSelector` by default doesn't have any releases to that we can use it in alertmanager.yml so that prometheus pick it
+by default. So we need to change the helm chart. Sth like:
+```yaml
+alertmanagerConfigSelector:
+  matchLabels:
+    # could be any arbitrary key-value pair
+    resource: prometheus
+```
+
+Then run:
+```shell
+helm upgrade prometheus prometheus-community/kube-prometheus-stack -f <path to alert manager config>
+```
+
+Then apply the alert manager config with the specified selector that you chose in the previous step(resource: prometheus).
+So in rules.yaml for alert manager, we would have:
+```yaml
+metadata:
+  name: ...
+  labels:
+    resource: prometheus
+```
+
+Then to verify it was applied:
+```shell
+kubectl get alertmanagerconfig
+
+# set up port forwarding
+kubectl port-forward service/alertmanager-operated 9093
+# Now see if the new rules for alert manager is applied
+```
+
 ## 79-11-Lab – Kubernetes & Prometheus
 ## 80-12-Feedback – Prometheus Certified Associate
